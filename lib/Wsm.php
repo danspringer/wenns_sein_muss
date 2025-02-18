@@ -73,7 +73,7 @@ class Wsm
             $g['description'] = $group->getDescription();
             $g['linked_category'] = $group->getName();
 
-            f$entries = [];
+            $entries = [];
             foreach ($services as $service) {
                 /** @var Service $service */
                 $entries[] = Entry::findEntriesArray($service->getId());
