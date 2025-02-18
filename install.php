@@ -73,7 +73,6 @@ if (rex_addon::get('yform')->isAvailable()) {
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_iframe.json'));
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_protocol.json'));
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_service.json'));
-    rex_yform_manager_table::deleteCache();
 }
 
 rex_config::set('wenns_sein_muss', 'lastchange', date('Y-m-d H:i:s'));
@@ -83,7 +82,7 @@ rex_dir::create(rex_path::addonData('wenns_sein_muss'));
 /* via rex_sql überprüfen, ob es bereits ein Media Manager Profil gibt - wenn nicht, dann anlegen */
 $profile_name = rex_config::get('wenns_sein_muss', 'media_manager_profile', 'wsm');
 
-$media_manager_type = rex_sql::factory()->getArray('SELECT `name` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = ?', [':name' => $profile_name]);
+$media_manager_type = rex_sql::factory()->getArray('SELECT `name` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = :name', [':name' => $profile_name]);
 $profile_exists = false;
 foreach ($media_manager_type as $profile) {
     if ($profile['name'] === $profile_name) {
