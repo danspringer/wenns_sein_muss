@@ -103,7 +103,7 @@ if (!$profile_exists) {
     $sql->setValue('updateuser', 'wenns_sein_muss');
     $sql->insert();
 
-    $media_manager_type_id = rex_sql::factory()->getArray('SELECT `id` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = ?', [':name' => $profile_name]);
+    $media_manager_type_id = rex_sql::factory()->getArray('SELECT `id` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = :name', [':name' => $profile_name]);
     $profile_id = $media_manager_type_id[0]['id'];
     $sql = rex_sql::factory();
     $sql->setTable(rex::getTable('media_manager_type_effect'));
