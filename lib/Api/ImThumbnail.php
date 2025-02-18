@@ -2,7 +2,6 @@
 
 namespace Alexplusde\Wsm;
 
-use InvalidArgumentException;
 use rex_api_function;
 use rex_file;
 use rex_logger;
@@ -40,7 +39,7 @@ class ImThumbnail extends rex_api_function
                     rex_response::sendFile(rex_path::addonData('wenns_sein_muss', self::generateFileName('youtube', $id)), 'image/jpeg');
                 }
             }
-    }
+        }
 
         if ('youtube' === $service) {
             // TODO: Prüfen, ob noch notwendig

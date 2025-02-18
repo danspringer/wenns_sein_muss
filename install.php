@@ -73,7 +73,6 @@ if (rex_addon::get('yform')->isAvailable()) {
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_iframe.json'));
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_protocol.json'));
     rex_yform_manager_table_api::importTablesets(rex_file::get(__DIR__ . '/install/rex_wenns_sein_muss_service.json'));
-    rex_yform_manager_table::deleteCache();
 }
 
 rex_config::set('wenns_sein_muss', 'lastchange', date('Y-m-d H:i:s'));
@@ -81,10 +80,12 @@ rex_config::set('wenns_sein_muss', 'lastchange', date('Y-m-d H:i:s'));
 rex_dir::create(rex_path::addonData('wenns_sein_muss'));
 
 /* via rex_sql überprüfen, ob es bereits ein Media Manager Profil gibt - wenn nicht, dann anlegen */
-$media_manager_types = rex_sql::factory()->setQuery('SELECT * FROM ' . rex::getTable('media_manager_type'))->getArray();
+$profile_name = rex_config::get('wenns_sein_muss', 'media_manager_profile', 'wsm');
+
+$media_manager_type = rex_sql::factory()->getArray('SELECT `name` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = :name', [':name' => $profile_name]);
 $profile_exists = false;
-foreach ($media_manager_types as $profile) {
-    if ($profile['name'] === rex_config::get('wenns_sein_muss', 'media_manager_type')) {
+foreach ($media_manager_type as $profile) {
+    if ($profile['name'] === $profile_name) {
         $profile_exists = true;
         break;
     }
@@ -93,7 +94,7 @@ foreach ($media_manager_types as $profile) {
 if (!$profile_exists) {
     $sql = rex_sql::factory();
     $sql->setTable(rex::getTable('media_manager_type'));
-    $sql->setValue('name', 'wenns_sein_muss');
+    $sql->setValue('name', $profile_name);
     $sql->setValue('status', 0);
     $sql->setValue('description', '');
     $sql->setValue('createdate', date('Y-m-d H:i:s'));
@@ -102,9 +103,8 @@ if (!$profile_exists) {
     $sql->setValue('updateuser', 'wenns_sein_muss');
     $sql->insert();
 
-    /* ID des letzten Datensatzes ermitteln */
-    $profile_id = rex_sql::factory()->getLastId();
-
+    $media_manager_type_id = rex_sql::factory()->getArray('SELECT `id` FROM ' . rex::getTable('media_manager_type') . ' WHERE `name` = :name', [':name' => $profile_name]);
+    $profile_id = $media_manager_type_id[0]['id'];
     $sql = rex_sql::factory();
     $sql->setTable(rex::getTable('media_manager_type_effect'));
     $sql->setValue('type_id', $profile_id);

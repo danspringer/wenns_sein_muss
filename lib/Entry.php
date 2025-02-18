@@ -7,7 +7,7 @@ use rex_yform_manager_dataset;
 class Entry extends rex_yform_manager_dataset
 {
     /**
-     * @return array<string,string>[]
+     * @return array<array<string,string>>
      */
     public static function findEntriesArray(int $service_id): array
     {
