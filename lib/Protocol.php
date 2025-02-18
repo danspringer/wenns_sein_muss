@@ -165,8 +165,8 @@ class Protocol extends rex_yform_manager_dataset
                 $accepted_services = $a['list']->getValue('accepted_services');
                 $rejected_services = $a['list']->getValue('rejected_services');
 
-                $accepted_services = array_filter(json_decode($accepted_services, true) ?? [], fn (string $value): bool => strlen($value) > 0);
-                $rejected_services = array_filter(json_decode($rejected_services, true) ?? [], fn (string $value): bool => strlen($value) > 0);
+                $accepted_services = array_filter(json_decode($accepted_services, true) ?? [], static fn (string $value): bool => '' !== $value);
+                $rejected_services = array_filter(json_decode($rejected_services, true) ?? [], static fn (string $value): bool => '' !== $value);
 
                 $output = '';
                 $output .= '✅<br>';

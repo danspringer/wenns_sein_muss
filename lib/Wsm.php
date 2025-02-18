@@ -2,27 +2,24 @@
 
 namespace Alexplusde\Wsm;
 
-use InvalidArgumentException;
-use LogicException;
 use rex;
 use rex_addon;
 use rex_clang;
 use rex_config;
-use rex_exception;
 use rex_extension_point;
 use rex_file;
 use rex_formatter;
 use rex_i18n;
 use rex_path;
-use rex_sql_exception;
 use rex_string;
 use rex_type;
 use rex_url;
 use rex_view;
 use rex_yrewrite;
-use RuntimeException;
+use rex_yrewrite_domain;
 use ZipArchive;
 
+use function call_user_func_array;
 use function count;
 use function in_array;
 
@@ -52,7 +49,7 @@ class Wsm
     /* Erhalte das passende JSON für die Ausgabe der Drittanbieter-Services im Frontend */
 
     /**
-     * @return array<string,mixed>[]
+     * @return array<array<string,mixed>>
      */
     private static function getServicesAsArray(): array
     {
@@ -90,7 +87,6 @@ class Wsm
             $g['cookieTable']['body'] = call_user_func_array('array_merge', $entries);
 
             $sections[] = $g;
-            
         }
 
         return $sections;
@@ -207,7 +203,7 @@ class Wsm
      */
     public static function newRevision(): void
     {
-        if(self::backupRevision()) {
+        if (self::backupRevision()) {
             self::setConfig('revision', date('Y-m-d H:i:s'));
         }
     }
@@ -298,7 +294,7 @@ class Wsm
         if (rex_addon::get('yrewrite')->isAvailable()) {
             $domains = rex_yrewrite::getDomains();
             foreach ($domains as $domain) {
-                /** @var \rex_yrewrite_domain $domain */
+                /** @var rex_yrewrite_domain $domain */
                 $wsm_domain = Domain::create();
                 $wsm_domain->setDomainId($domain->getId() ?? 0);
                 $wsm_domain->setPrivacyPolicyId($domain->getStartId());
@@ -307,6 +303,7 @@ class Wsm
             }
         }
     }
+
     /**
      * @api
      */
@@ -316,14 +313,14 @@ class Wsm
 
         $return = [];
 
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $return[$group->getName()] = $group->getData();
             $services = Service::query()->where('group', $group->getId())->find();
 
-            foreach($services as $service) {
+            foreach ($services as $service) {
                 $return[$group->getName()]['service'][$service->getName()] = $service->getData();
                 $entries = Entry::query()->where('service_id', $service->getId())->find();
-                foreach($entries as $entry) {
+                foreach ($entries as $entry) {
                     $return[$group->getName()]['service'][$service->getName()]['entry'][$entry->getName()] = $entry->getData();
                 }
             }
@@ -336,24 +333,19 @@ class Wsm
         }
         $backupFile = $backupFolder . '/' . $revisionNumber . '.json';
         $content = json_encode($return, JSON_PRETTY_PRINT);
-        if(false !== $content) {
+        if (false !== $content) {
             rex_file::put($backupFile, $content);
         }
 
         $backupFile = $backupFolder . '/' . $revisionNumber . '.json';
         $zipFile = $backupFolder . '/' . $revisionNumber . '.zip';
         $zip = new ZipArchive();
-        if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+        if (true === $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
             $zip->addFile($backupFile, basename($backupFile));
             $zip->close();
             unlink($backupFile);
             return true;
-        } else {
-            return false;
         }
-
-
+        return false;
     }
-
-
 }
