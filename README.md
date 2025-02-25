@@ -179,6 +179,11 @@ z.B. für Google Maps
 
 Siehe <https://github.com/orestbida/iframemanager#configuration-options>.
 
+#### Nachträgliches Öffnen des Einstellungsfensters
+Die Klasse `wsm-show` z.B. auf einem Link öffnet den Consent-Manager im Nachhinein.
+
+Bsp.: `<a class="wsm-show">Datenschutz-Einstellungen</a>`
+
 #### Themes
 
 Siehe <https://cookieconsent.orestbida.com/advanced/ui-customization.html#color-schemes>
