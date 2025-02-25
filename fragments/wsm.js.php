@@ -97,6 +97,11 @@ use rex_clang;
 				body: formData
 			});
 		}
+
+        function openWsmConsentModal() {
+            wsm_cc.showPreferences();
+        }
+
 		/* Consent Details https://gist.github.com/orestbida/62ac9787123c841fa2448e91573bf22b */
 		const updateConsentDetails = (modal) => {
 
@@ -131,5 +136,9 @@ use rex_clang;
 				addEventListener('cc:onChange', () => updateConsentDetails(modal));
 			}
 		});
+
+        if(document.querySelector('.wsm-show')){
+            document.querySelector('.wsm-show').addEventListener('click', openWsmConsentModal);
+        }
 	});
 </script>
